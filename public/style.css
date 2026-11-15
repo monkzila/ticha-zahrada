@@ -169,3 +169,15 @@ footer{color:var(--muted);font-size:.8rem;padding-bottom:calc(40px + env(safe-ar
 @media (max-width:520px){.quote-row{gap:16px}.orig{font-size:1rem;padding-left:12px;max-height:12em}}
 #a2hs{flex-basis:100%}
 #a2hs .link{font-size:inherit}
+
+/* Průvodce čaji ve sbírce Čajový obřad */
+.guide{display:flex;flex-direction:column;gap:14px;padding:6px 0 26px}
+.guide h3{margin:10px 0 0;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.teas{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.teas li{background:var(--chip);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.tea-top{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px}
+.tea-top .nm{font-weight:600;font-size:1.05rem}
+.tea-top .o{font-family:"Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif;color:var(--muted);font-size:.95rem;letter-spacing:.08em}
+.tea-top .temp{margin-left:auto;font-size:.74rem;font-weight:700;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:1px 9px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.teas p{margin:0;font-size:.92rem;line-height:1.6}
+.teas .fact{color:var(--muted);font-style:italic}

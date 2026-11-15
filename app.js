@@ -171,6 +171,8 @@ export function createApp({ db, env = process.env }) {
       collections: COLLECTIONS.map((c) => ({
         key: c.key, title: c.title, desc: c.desc, count: c.ids.length,
         quotes: open ? c.ids.map(quoteById).filter(Boolean) : undefined,
+        notes: open ? c.notes : undefined,
+        hasNotes: !!c.notes,
       })),
     });
   });

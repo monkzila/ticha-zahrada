@@ -87,3 +87,20 @@ U těchto není znění originálu jisté, proto znaky nemají.
 - 65: Modrá hora nebrání bílým oblakům v letu. (zenové rčení)
 - 66: Bez bláta není lotos. (Thich Nhat Hanh)
 - 67: Nadechuji se a zklidňuji tělo. Vydechuji a usmívám se. (Thich Nhat Hanh)
+
+## Průvodce čaji (sbírka Čajový obřad)
+
+Zkontrolovat znaky i fakta: teploty vody, letopočty a údaje o čajovně Taian a vesnici, kde se vyrábějí metličky.
+
+| Název | Znaky | Druh | OK |
+|---|---|---|---|
+| Matcha | 抹茶 | čaj | ☐ |
+| Gjokuro | 玉露 | čaj | ☐ |
+| Senča | 煎茶 | čaj | ☐ |
+| Hódžiča | ほうじ茶 | čaj | ☐ |
+| Genmaiča | 玄米茶 | čaj | ☐ |
+| Kukiča | 茎茶 | čaj | ☐ |
+| Jak se čaj dostal do zenu | 喫茶養生記 | zajímavost | ☐ |
+| Dvířka, kterými se leze | 躙口 | zajímavost | ☐ |
+| Čajovna na dvou rohožích | 待庵 | zajímavost | ☐ |
+| Metlička z jednoho kusu bambusu | 茶筅 | zajímavost | ☐ |

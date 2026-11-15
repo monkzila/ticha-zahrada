@@ -97,13 +97,52 @@ async function loadDays() {
 const span = (cls, text) => { const s = document.createElement('span'); s.className = cls; s.textContent = text; return s; };
 const plural = (n) => (n === 1 ? 'výrok' : n < 5 ? 'výroky' : 'výroků');
 
+// Průvodce čaji uvnitř sbírky
+function teaGuide(n) {
+  const box = document.createElement('div');
+  box.className = 'guide';
+  const h = document.createElement('h3');
+  h.textContent = n.title;
+  const list = document.createElement('ul');
+  list.className = 'teas';
+  n.teas.forEach((t) => {
+    const li = document.createElement('li');
+    const top = document.createElement('div');
+    top.className = 'tea-top';
+    const o = span('o', t.orig); o.lang = 'ja';
+    top.append(span('nm', t.name), o, span('temp', 'voda ' + t.temp));
+    const p = document.createElement('p'); p.textContent = t.text;
+    li.append(top, p);
+    if (t.fact) { const f = document.createElement('p'); f.className = 'fact'; f.textContent = t.fact; li.append(f); }
+    list.append(li);
+  });
+  const h2 = document.createElement('h3');
+  h2.textContent = 'Zajímavosti';
+  const facts = document.createElement('ul');
+  facts.className = 'teas';
+  n.facts.forEach((t) => {
+    const li = document.createElement('li');
+    const top = document.createElement('div');
+    top.className = 'tea-top';
+    const o = span('o', t.orig); o.lang = 'ja';
+    top.append(span('nm', t.title), o);
+    const p = document.createElement('p'); p.textContent = t.text;
+    li.append(top, p);
+    if (t.fact) { const f = document.createElement('p'); f.className = 'fact'; f.textContent = t.fact; li.append(f); }
+    facts.append(li);
+  });
+  box.append(h, list, h2, facts);
+  return box;
+}
+
 async function loadCollections() {
   const r = await api('/api/collections');
   const ul = $('cols');
   ul.innerHTML = '';
   r.collections.forEach((c) => {
     const li = document.createElement('li');
-    const head = [span('t', c.title), span('n', r.open ? `${c.count} ${plural(c.count)}` : 'pro členy'), span('ds', c.desc)];
+    const extra = c.hasNotes ? ' · průvodce' : '';
+    const head = [span('t', c.title), span('n', r.open ? `${c.count} ${plural(c.count)}${extra}` : 'pro členy'), span('ds', c.desc)];
     if (r.open) {
       const d = document.createElement('details');
       const s = document.createElement('summary');
@@ -115,6 +154,7 @@ async function loadCollections() {
         ol.append(item);
       });
       d.append(s, ol);
+      if (c.notes) d.append(teaGuide(c.notes));
       li.append(d);
     } else {
       const b = document.createElement('button');

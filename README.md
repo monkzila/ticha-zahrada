@@ -18,7 +18,7 @@ Proto tu nejsou odznaky, počítadla sérií ani gratulace.
 - posledních 7 dní, účet, vlastní sbírka oblíbených
 
 **Členství**
-- tematické sbírky (Čajový obřad, Haiku čtyř ročních období, Kóany starých mistrů)
+- tematické sbírky (Čajový obřad s průvodcem po japonských čajích, Haiku čtyř ročních období, Kóany starých mistrů)
 - výběr témat, barva zahrady a barva členské sekce (Kámen, Matcha, Kincugi, Ticho)
 - deník ke každému dni
 - archiv 30 dní

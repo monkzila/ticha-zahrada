@@ -124,6 +124,9 @@ test('každý výrok má pramen a kontext, sbírky odkazují na existující vý
   await api('/api/checkout', { method: 'POST', body: { plan: 'yearly' } });
   const paid = await api('/api/collections');
   for (const c of paid.body.collections) assert.equal(c.quotes.length, c.count);
+  const caj = paid.body.collections.find((c) => c.key === 'caj');
+  assert.ok(caj.notes.teas.length >= 5, 'průvodce čaji pro členy');
+  assert.equal(free.body.collections.find((c) => c.key === 'caj').notes, undefined, 'průvodce je v členství');
 });
 
 test('zápisy bez JSON jsou odmítnuté', async () => {
