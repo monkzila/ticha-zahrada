@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { QUOTES, TOPICS, pickQuote, quoteById } from './lib/quotes.js';
+import { QUOTES, TOPICS, MU, pickQuote, quoteById } from './lib/quotes.js';
 import { hashPassword, checkPassword, createSession, userFromToken, deleteSession, parseCookies, rateLimiter } from './lib/auth.js';
 import { stripeClient, verifyWebhook } from './lib/stripe.js';
 
@@ -130,7 +130,7 @@ export function createApp({ db, env = process.env }) {
     res.json({ ok: true });
   });
 
-  app.get('/api/me', (req, res) => res.json({ user: publicUser(req.user), topics: TOPICS, payments: stripe ? 'stripe' : demoPayments ? 'demo' : 'off' }));
+  app.get('/api/me', (req, res) => res.json({ user: publicUser(req.user), topics: TOPICS, mu: MU, payments: stripe ? 'stripe' : demoPayments ? 'demo' : 'off' }));
 
   // ---------- Moudro ----------
   app.get('/api/day', (req, res) => {

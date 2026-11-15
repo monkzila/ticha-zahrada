@@ -6,7 +6,7 @@ const fmt = (s, o) => fromIso(s).toLocaleDateString('cs-CZ', o);
 const dayOfYear = (s) => { const d = fromIso(s); return Math.round((d - new Date(d.getFullYear(), 0, 1)) / 864e5) + 1; };
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const state = { me: null, topics: {}, payments: 'off', today: isoLocal(new Date()), shown: null, entry: null };
+const state = { me: null, topics: {}, mu: null, showMu: false, payments: 'off', today: isoLocal(new Date()), shown: null, entry: null };
 state.shown = state.today;
 
 async function api(path, { method = 'GET', body } = {}) {
@@ -34,6 +34,7 @@ async function loadMe() {
   const r = await api('/api/me');
   state.me = r.user;
   state.topics = r.topics;
+  state.mu = r.mu;
   state.payments = r.payments;
 }
 
@@ -63,6 +64,7 @@ async function loadDays() {
     qs.textContent = d.text;
     b.append(ds, qs);
     b.onclick = async () => {
+      setMu(false);
       state.shown = d.day;
       await loadDay();
       renderDay();
@@ -100,7 +102,8 @@ function renderDay() {
   const y = fromIso(e.day).getFullYear();
   const leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
   $('dayNo').textContent = `Den ${dayOfYear(e.day)} z ${leap ? 366 : 365} · ${fmt(e.day, { day: 'numeric', month: 'long' })}`;
-  const key = e.day + ':' + e.quote.id;
+  const mu = state.showMu && state.mu;
+  const key = e.day + ':' + e.quote.id + ':' + !!mu;
   if (renderDay.last !== key) {
     renderDay.last = key;
     const s = document.querySelector('.saying');
@@ -108,10 +111,13 @@ function renderDay() {
     void s.offsetWidth; // restart animace
     s.classList.add('flow');
   }
-  $('quote').textContent = e.quote.text;
-  $('who').textContent = '— ' + e.quote.who;
-  $('practice').textContent = e.quote.practice;
-  $('todayBtn').hidden = e.day === state.today;
+  $('quote').textContent = mu ? mu.text : e.quote.text;
+  $('quote').classList.toggle('mu', !!mu);
+  $('who').textContent = '— ' + (mu ? mu.who : e.quote.who);
+  $('practice').textContent = mu ? mu.practice : e.quote.practice;
+  if (mu) $('dayNo').textContent = mu.eyebrow;
+  $('saveBtn').hidden = $('copyBtn').hidden = !!mu;
+  $('todayBtn').hidden = e.day === state.today && !mu;
   $('saveBtn').textContent = e.favorite ? 'Uloženo ✓' : 'Uložit si';
   $('saveBtn').classList.toggle('on', e.favorite);
 
@@ -212,7 +218,7 @@ $('copyBtn').onclick = () => {
   });
 };
 
-$('todayBtn').onclick = async () => { state.shown = state.today; await loadDay(); renderDay(); loadDays(); };
+$('todayBtn').onclick = async () => { setMu(false); state.shown = state.today; await loadDay(); renderDay(); loadDays(); };
 
 $('journalSave').onclick = async () => {
   try {
@@ -280,9 +286,21 @@ $('authForm').addEventListener('submit', async (ev) => {
   } catch (e) { $('authErr').textContent = e.message; }
 });
 
+// ---------- Kamenný pes (schovaný kóan) ----------
+function setMu(on) {
+  state.showMu = on;
+  $('dog').setAttribute('aria-pressed', String(on));
+}
+$('dog').onclick = (ev) => {
+  ev.stopPropagation(); // ať se nepoloží kámen
+  setMu(!state.showMu);
+  renderDay();
+};
+
 // ---------- Hrabaný písek ----------
+const DOG = { x: .9, y: .34 };
 const cv = $('sand'), gd = $('garden');
-let stones = [{ x: .22, y: .5, r: 30 }, { x: .7, y: .38, r: 22 }, { x: .78, y: .62, r: 14 }];
+let stones = [{ x: .22, y: .5, r: 30 }, { x: .62, y: .4, r: 22 }, { x: .7, y: .66, r: 14 }];
 function draw() {
   const w = gd.clientWidth, h = gd.clientHeight, dpr = devicePixelRatio || 1;
   cv.width = w * dpr; cv.height = h * dpr;
@@ -301,19 +319,21 @@ function draw() {
     return { x: s.x * w, y: s.y * h, r: s.r * (0.6 + 0.4 * Math.min(1, p * 3)), halo: s.r + 8 + 36 * e };
   });
   if (moving) requestAnimationFrame(draw);
+  const D = { x: DOG.x * w, y: DOG.y * h, r: 24, halo: 52 };
+  const A = [...S, D];
   const gap = 9;
   for (let y = gap / 2; y < h; y += gap) {
     c.beginPath();
     let pen = false;
     for (let x = 0; x <= w; x += 3) {
       const yy = y + Math.sin(x / 90 + y / 40) * 1.2;
-      if (S.some((s) => Math.hypot(x - s.x, yy - s.y) < s.halo)) { pen = false; continue; }
+      if (A.some((s) => Math.hypot(x - s.x, yy - s.y) < s.halo)) { pen = false; continue; }
       pen ? c.lineTo(x, yy) : c.moveTo(x, yy);
       pen = true;
     }
     c.stroke();
   }
-  S.forEach((s) => { for (let r = s.r + 8; r < s.halo; r += gap) { c.beginPath(); c.arc(s.x, s.y, r, 0, Math.PI * 2); c.stroke(); } });
+  A.forEach((s) => { for (let r = s.r + 8; r < s.halo; r += gap) { c.beginPath(); c.arc(s.x, s.y, r, 0, Math.PI * 2); c.stroke(); } });
   S.forEach((s, i) => {
     c.beginPath();
     for (let k = 0; k <= 9; k++) {
@@ -325,6 +345,23 @@ function draw() {
     c.beginPath(); c.ellipse(s.x - s.r * .25, s.y - s.r * .3, s.r * .45, s.r * .2, -.3, 0, Math.PI * 2);
     c.fillStyle = col('--stone-hi'); c.globalAlpha = .6; c.fill(); c.globalAlpha = 1;
   });
+  drawDog(c, D, col);
+}
+function drawDog(c, D, col) {
+  const x = D.x, y = D.y + 6;
+  const el = (cx, cy, rx, ry, rot = 0) => { c.beginPath(); c.ellipse(cx, cy, rx, ry, rot, 0, Math.PI * 2); c.fill(); };
+  c.save();
+  c.fillStyle = col('--stone');
+  el(x + 3, y + 6, 13, 10); el(x - 8, y - 3, 6, 11, -.35); c.fillRect(x - 12, y + 2, 4, 14); // tělo, hruď, přední noha
+  el(x - 11, y - 15, 7, 6); el(x - 18, y - 13, 4.5, 3); // hlava a čumák
+  c.beginPath(); c.moveTo(x - 12, y - 19); c.lineTo(x - 6, y - 25); c.lineTo(x - 6, y - 17); c.closePath(); c.fill(); // ucho
+  c.strokeStyle = col('--stone'); c.lineWidth = 3.5; c.lineCap = 'round';
+  c.beginPath(); c.moveTo(x + 14, y + 8); c.quadraticCurveTo(x + 22, y + 4, x + 19, y - 5); c.stroke(); // ocas
+  c.fillStyle = col('--stone-hi'); c.globalAlpha = .6; el(x - 12, y - 17, 3, 1.5, -.3);
+  c.restore();
+  const b = $('dog');
+  b.style.left = (D.x - 28) + 'px';
+  b.style.top = (D.y - 24) + 'px';
 }
 gd.addEventListener('click', (e) => {
   const b = gd.getBoundingClientRect();

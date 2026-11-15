@@ -34,7 +34,7 @@ Testy: `npm test`
 
 Otevři `lib/quotes.js` a přidej řádek na konec seznamu. Každé moudro má `id` (nové číslo), `text`, `who` (autor), `practice` (úkol) a `topics` (témata).
 
-> Cíl: aspoň 365 mouder, ať se rok neopakují. Teď jich je 30.
+> Cíl: aspoň 365 mouder, ať se rok neopakují. Teď jich je 68.
 
 ## Jak to dostat na internet
 
