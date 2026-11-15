@@ -8,6 +8,7 @@ import { stripeClient, verifyWebhook } from './lib/stripe.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const GARDENS = ['', 'moss', 'dusk'];
+const PLUS_THEMES = ['', 'matcha', 'kincugi', 'ticho']; // '' = Kámen
 const ARCHIVE_FREE = 7;
 const ARCHIVE_PREMIUM = 30;
 const COOKIE = 'tz_session';
@@ -80,7 +81,7 @@ export function createApp({ db, env = process.env }) {
 
   const topicsOf = (u) => (u?.premium ? JSON.parse(u.topics || '[]') : []);
   const publicUser = (u) =>
-    u && { email: u.email, premium: !!u.premium, garden: u.premium ? u.garden : '', topics: topicsOf(u) };
+    u && { email: u.email, premium: !!u.premium, garden: u.premium ? u.garden : '', plus: u.premium ? u.plus : '', topics: topicsOf(u) };
 
   // Dny tohoto týdne (pondělí až dnešek), kdy člověk zahradu otevřel. Za každý leží v písku kámen.
   function week(userId, today) {
@@ -192,8 +193,9 @@ export function createApp({ db, env = process.env }) {
   // ---------- Prémiové funkce ----------
   app.put('/api/settings', needUser, needPremium, (req, res) => {
     const garden = GARDENS.includes(req.body.garden) ? req.body.garden : '';
+    const plus = PLUS_THEMES.includes(req.body.plus) ? req.body.plus : '';
     const topics = Array.isArray(req.body.topics) ? [...new Set(req.body.topics.filter((t) => t in TOPICS))] : [];
-    db.prepare('UPDATE users SET garden = ?, topics = ? WHERE id = ?').run(garden, JSON.stringify(topics), req.user.id);
+    db.prepare('UPDATE users SET garden = ?, plus = ?, topics = ? WHERE id = ?').run(garden, plus, JSON.stringify(topics), req.user.id);
     res.json({ user: publicUser(db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id)) });
   });
 

@@ -78,8 +78,12 @@ test('prémiové funkce jsou zamčené, po zaplacení odemčené', async () => {
 
   const c = await api('/api/checkout', { method: 'POST', body: {} });
   assert.equal(c.body.demo, true);
-  const s = await api('/api/settings', { method: 'PUT', body: { garden: 'moss', topics: ['vztahy', 'nesmysl'] } });
+  const s = await api('/api/settings', { method: 'PUT', body: { garden: 'moss', plus: 'kincugi', topics: ['vztahy', 'nesmysl'] } });
   assert.deepEqual(s.body.user.topics, ['vztahy']);
+  assert.equal(s.body.user.plus, 'kincugi');
+  const bad = await api('/api/settings', { method: 'PUT', body: { garden: 'moss', plus: 'tus', topics: ['vztahy'] } });
+  assert.equal(bad.body.user.plus, '', 'neznámá barva se vrátí na Kámen');
+  await api('/api/settings', { method: 'PUT', body: { garden: 'moss', plus: 'kincugi', topics: ['vztahy'] } });
   assert.equal(s.body.user.garden, 'moss');
 
   const d = await api(`/api/day?today=${today}`);

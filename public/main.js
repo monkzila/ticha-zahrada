@@ -196,6 +196,8 @@ function renderAccount() {
   const premium = !!me?.premium;
   if (premium && me.garden) document.documentElement.dataset.garden = me.garden;
   else delete document.documentElement.dataset.garden;
+  if (premium && me.plus) document.documentElement.dataset.plus = me.plus;
+  else delete document.documentElement.dataset.plus;
 
   $('plusBadge').hidden = !premium;
   $('plusIntro').textContent = premium
@@ -204,6 +206,10 @@ function renderAccount() {
   $('buyRow').hidden = premium;
   $('manageRow').hidden = !premium;
 
+  document.querySelectorAll('#plusChips .btn').forEach((b) => {
+    b.disabled = !premium;
+    b.classList.toggle('on', (premium ? me.plus : '') === b.dataset.p);
+  });
   document.querySelectorAll('#gardenChips .btn').forEach((b) => {
     b.disabled = !premium;
     b.classList.toggle('on', (premium ? me.garden : '') === b.dataset.g);
@@ -241,7 +247,7 @@ async function refreshAll() {
 // ---------- Akce ----------
 async function saveSettings(patch) {
   try {
-    const r = await api('/api/settings', { method: 'PUT', body: { garden: state.me.garden, topics: state.me.topics, ...patch } });
+    const r = await api('/api/settings', { method: 'PUT', body: { garden: state.me.garden, plus: state.me.plus, topics: state.me.topics, ...patch } });
     state.me = { ...state.me, ...r.user };
     renderAccount();
     draw();
@@ -250,6 +256,7 @@ async function saveSettings(patch) {
 }
 
 document.querySelectorAll('#gardenChips .btn').forEach((b) => (b.onclick = () => saveSettings({ garden: b.dataset.g })));
+document.querySelectorAll('#plusChips .btn').forEach((b) => (b.onclick = () => saveSettings({ plus: b.dataset.p })));
 
 $('saveBtn').onclick = async () => {
   if (!state.me) return openAuth('register', 'Vlastní sbírka patří k účtu. Je zdarma.');
