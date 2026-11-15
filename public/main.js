@@ -625,6 +625,13 @@ $('shareCopy').onclick = () => {
 };
 $('shareClose').onclick = () => $('share').close();
 
+// ---------- Ikona na ploše (iPhone) ----------
+// Nápověda se ukáže jen v Safari na iPhonu či iPadu, dokud zahrada není na ploše.
+const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const standalone = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+if (ios && !standalone && !store.get('tz-a2hs', false)) $('a2hs').hidden = false;
+$('a2hsClose').onclick = () => { store.set('tz-a2hs', true); $('a2hs').hidden = true; };
+
 // ---------- Start ----------
 const params = new URLSearchParams(location.search);
 if (params.has('platba')) {

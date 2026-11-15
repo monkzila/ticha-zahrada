@@ -5,7 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tichá zahrada</title>
 <meta name="description" content="Jedno zenové moudro a jeden malý úkol na každý den.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23e4e5df'/%3E%3Cellipse cx='16' cy='17' rx='8' ry='6' fill='%236f716b'/%3E%3C/svg%3E">
+<link rel="icon" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Zahrada">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f4f4f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a1b18" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap">
@@ -109,7 +117,9 @@
   </section>
 </div></main>
 
-<footer><div class="wrap"><span id="credit"></span><span id="payMode"></span></div></footer>
+<footer><div class="wrap"><span id="credit"></span><span id="payMode"></span>
+  <span id="a2hs" hidden>Do mobilu: v Safari klepni na Sdílet a pak na „Přidat na plochu“. <button class="link" type="button" id="a2hsClose">Rozumím</button></span>
+</div></footer>
 
 <dialog id="auth">
   <form id="authForm" method="dialog" novalidate>

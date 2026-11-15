@@ -53,6 +53,16 @@ Původ (`orig` znaky, `source` pramen, `why` kontext) se píše pod stejným `id
 3. **Proměnné prostředí**: zkopíruj z `.env.example` a vyplň.
 4. **Doména**: v nastavení hostingu připoj svou doménu a nastav ji do `BASE_URL`.
 
+## Aplikace v iPhonu (ikona na ploše)
+
+Web se dá přidat na plochu a pak se otevírá jako aplikace: s vlastní ikonou, na celou obrazovku.
+
+1. Web musí běžet na internetu na adrese s `https://` (viz výše).
+2. Otevři ho v **Safari**.
+3. Klepni na **Sdílet** (čtvereček se šipkou) → **Přidat na plochu** → **Přidat**.
+
+Ikony jsou v `public/icons/`, název a barvy v `public/manifest.webmanifest`.
+
 ## Jak zapnout platby (Stripe)
 
 1. Založ účet na stripe.com (nejdřív v testovacím režimu).

@@ -150,3 +150,5 @@ footer{color:var(--muted);font-size:.8rem;padding-bottom:calc(40px + env(safe-ar
   .saying.flow blockquote,.saying.flow .who,.saying.flow .practice,dialog[open],.minute,.minute.out{animation:none}
 }
 @media (max-width:520px){.quote-row{gap:16px}.orig{font-size:1rem;padding-left:12px;max-height:12em}}
+#a2hs{flex-basis:100%}
+#a2hs .link{font-size:inherit}
