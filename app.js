@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { QUOTES, TOPICS, MU, pickQuote, quoteById } from './lib/quotes.js';
+import { COLLECTIONS, TRANSLATION_CREDIT } from './lib/details.js';
 import { hashPassword, checkPassword, createSession, userFromToken, deleteSession, parseCookies, rateLimiter } from './lib/auth.js';
 import { stripeClient, verifyWebhook } from './lib/stripe.js';
 
@@ -79,15 +80,13 @@ export function createApp({ db, env = process.env }) {
 
   const topicsOf = (u) => (u?.premium ? JSON.parse(u.topics || '[]') : []);
   const publicUser = (u) =>
-    u && { email: u.email, premium: !!u.premium, garden: u.premium ? u.garden : '', topics: topicsOf(u), streak: streak(u.id) };
+    u && { email: u.email, premium: !!u.premium, garden: u.premium ? u.garden : '', topics: topicsOf(u) };
 
-  function streak(userId) {
-    const days = new Set(db.prepare('SELECT day FROM visits WHERE user_id = ? ORDER BY day DESC LIMIT 400').all(userId).map((r) => r.day));
-    if (!days.size) return 0;
-    let d = [...days].sort().pop();
-    let n = 0;
-    while (days.has(d)) { n++; d = addDays(d, -1); }
-    return n;
+  // Dny tohoto týdne (pondělí až dnešek), kdy člověk zahradu otevřel. Za každý leží v písku kámen.
+  function week(userId, today) {
+    const dow = (new Date(today + 'T00:00:00Z').getUTCDay() + 6) % 7;
+    return db.prepare('SELECT day FROM visits WHERE user_id = ? AND day >= ? AND day <= ? ORDER BY day')
+      .all(userId, addDays(today, -dow), today).map((r) => r.day);
   }
 
   // Den, který klient považuje za "dnes" (podle svého časového pásma). Povolíme ±1 den proti serveru.
@@ -130,7 +129,7 @@ export function createApp({ db, env = process.env }) {
     res.json({ ok: true });
   });
 
-  app.get('/api/me', (req, res) => res.json({ user: publicUser(req.user), topics: TOPICS, mu: MU, payments: stripe ? 'stripe' : demoPayments ? 'demo' : 'off' }));
+  app.get('/api/me', (req, res) => res.json({ user: publicUser(req.user), topics: TOPICS, mu: MU, credit: TRANSLATION_CREDIT, payments: stripe ? 'stripe' : demoPayments ? 'demo' : 'off' }));
 
   // ---------- Moudro ----------
   app.get('/api/day', (req, res) => {
@@ -146,7 +145,7 @@ export function createApp({ db, env = process.env }) {
       if (day === today) db.prepare('INSERT OR IGNORE INTO visits (user_id, day) VALUES (?, ?)').run(req.user.id, today);
       out.favorite = !!db.prepare('SELECT 1 FROM favorites WHERE user_id = ? AND quote_id = ?').get(req.user.id, q.id);
       if (req.user.premium) out.journal = db.prepare('SELECT text FROM journal WHERE user_id = ? AND day = ?').get(req.user.id, day)?.text ?? '';
-      out.streak = streak(req.user.id);
+      out.week = week(req.user.id, today);
     }
     res.json(out);
   });
@@ -161,6 +160,18 @@ export function createApp({ db, env = process.env }) {
       return { day, id: q.id, text: q.text };
     });
     res.json({ days, window });
+  });
+
+  // ---------- Sbírky ----------
+  app.get('/api/collections', (req, res) => {
+    const open = !!req.user?.premium;
+    res.json({
+      open,
+      collections: COLLECTIONS.map((c) => ({
+        key: c.key, title: c.title, desc: c.desc, count: c.ids.length,
+        quotes: open ? c.ids.map(quoteById).filter(Boolean) : undefined,
+      })),
+    });
   });
 
   // ---------- Oblíbené ----------
@@ -206,11 +217,13 @@ export function createApp({ db, env = process.env }) {
       db.prepare('UPDATE users SET premium = 1 WHERE id = ?').run(req.user.id);
       return res.json({ demo: true });
     }
-    if (!stripe || !env.STRIPE_PRICE_ID) return res.status(503).json({ error: 'Platby zatím nejsou zapnuté.' });
+    const plan = req.body.plan === 'monthly' ? 'monthly' : 'yearly';
+    const price = plan === 'yearly' ? env.STRIPE_PRICE_YEARLY : env.STRIPE_PRICE_MONTHLY || env.STRIPE_PRICE_ID;
+    if (!stripe || !price) return res.status(503).json({ error: 'Platby zatím nejsou zapnuté.' });
     try {
       const params = {
         mode: 'subscription',
-        'line_items[0][price]': env.STRIPE_PRICE_ID,
+        'line_items[0][price]': price,
         'line_items[0][quantity]': '1',
         success_url: baseUrl + '/?platba=ok',
         cancel_url: baseUrl + '/?platba=zrusena',

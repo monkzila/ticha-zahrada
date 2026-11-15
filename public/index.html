@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400&text=%E7%84%A1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400&display=swap">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -17,55 +17,69 @@
   <div class="mark">Tichá zahrada <span>a Džóšúův pes</span></div>
   <div class="acct">
     <span class="today" id="todayLbl"></span>
-    <span class="streak" id="streak" hidden></span>
     <button class="link" id="loginBtn" type="button">Přihlásit</button>
     <button class="link" id="logoutBtn" type="button" hidden>Odhlásit</button>
   </div>
 </div></header>
 
-<div class="garden" id="garden" role="img" aria-label="Zahrada z hrabaného písku. Klepnutím přidáš kámen.">
+<div class="garden" id="garden" role="img" aria-label="Zahrada z hrabaného písku. Za každý den tohoto týdne, kdy ji otevřeš, v ní leží jeden kámen.">
   <canvas id="sand"></canvas>
   <button class="dog" id="dog" type="button" aria-label="Kamenný pes" aria-pressed="false"></button>
-  <div class="hint">klepni do písku a polož kámen</div>
+  <div class="hint">kámen za každý den · v neděli se písek uhrabe</div>
 </div>
 
 <main><div class="wrap">
   <section class="saying" aria-live="polite">
     <div class="eyebrow" id="dayNo">&nbsp;</div>
-    <blockquote id="quote">Hrabu písek…</blockquote>
-    <div class="who" id="who"></div>
+    <div class="quote-row">
+      <blockquote id="quote">Hrabu písek…</blockquote>
+      <div class="orig" id="orig" lang="ja" aria-label="Originál" hidden></div>
+    </div>
+    <div class="origin">
+      <div class="who" id="who"></div>
+      <div class="src" id="src"></div>
+    </div>
+    <details class="why" id="why" hidden>
+      <summary>Proč to říkal</summary>
+      <p id="whyText"></p>
+    </details>
     <div class="practice"><b>Na dnešek</b><span id="practice"></span></div>
     <div class="actions">
+      <button class="btn on" id="minuteBtn" type="button">Jedna minuta</button>
       <button class="btn" id="saveBtn" type="button">Uložit si</button>
-      <button class="btn" id="copyBtn" type="button">Zkopírovat</button>
+      <button class="btn" id="shareBtn" type="button">Sdílet</button>
       <button class="btn" id="todayBtn" type="button" hidden>Zpět na dnešek</button>
     </div>
   </section>
 
   <section class="journal" id="journalBox" hidden>
     <label for="journal"><h2>Můj deník</h2></label>
-    <textarea id="journal" rows="4" maxlength="4000" placeholder="Co ti dnešní moudro dalo?"></textarea>
-    <div class="row"><button class="btn on" id="journalSave" type="button">Uložit zápis</button><span class="muted" id="journalState"></span></div>
+    <textarea id="journal" rows="4" maxlength="4000" placeholder="Co ti dnešní výrok dal?"></textarea>
+    <div class="row"><button class="btn" id="journalSave" type="button">Uložit zápis</button><span class="muted" id="journalState"></span></div>
   </section>
 
   <section class="stack">
     <h2 id="daysH">Posledních sedm dní</h2>
     <ul class="days" id="days"></ul>
-    <p class="muted" id="daysMore">Starší dny až 30 dní zpátky jsou v předplatném.</p>
+  </section>
+
+  <section class="stack">
+    <h2>Sbírky</h2>
+    <ul class="cols" id="cols"></ul>
   </section>
 
   <section class="stack" id="favBox" hidden>
     <h2>Moje sbírka</h2>
     <ul class="favs" id="favs"></ul>
-    <p class="muted" id="favEmpty">Zatím prázdná. U moudra, které tě oslovilo, klikni na „Uložit si“.</p>
+    <p class="muted" id="favEmpty">Zatím prázdná. Výrok si sem přidáš tlačítkem „Uložit si“.</p>
   </section>
 
   <section class="plus" id="plus" aria-labelledby="plusH">
     <div class="plus-head">
       <h2 id="plusH">Moje zahrada</h2>
-      <span class="badge" id="plusBadge">Předplatné</span>
+      <span class="badge" id="plusBadge" hidden>Členství</span>
     </div>
-    <p id="plusIntro">S předplatným si vybereš témata mouder, barvu zahrady, píšeš si deník a vidíš 30 dní zpátky.</p>
+    <p id="plusIntro"></p>
 
     <div class="opt">
       <span class="lbl">Barva zahrady</span>
@@ -76,23 +90,26 @@
       </div>
     </div>
     <div class="opt">
-      <span class="lbl">O čem chci slyšet</span>
+      <span class="lbl">O čem chci číst</span>
       <div class="chips" id="topicChips"></div>
-      <span class="muted small">Když nevybereš nic, dostaneš ze všech témat.</span>
+      <span class="muted small">Bez výběru přicházejí výroky ze všech témat.</span>
     </div>
 
     <div class="price" id="buyRow">
-      <strong>79 Kč</strong><span>měsíčně · prvních 14 dní zdarma</span>
-      <button class="btn on" type="button" id="buyBtn">Vyzkoušet zdarma</button>
+      <div class="offer"><strong>690 Kč</strong><span>ročně · prvních 14 dní zdarma</span></div>
+      <div class="row">
+        <button class="btn on" type="button" id="buyBtn">Vstoupit na rok</button>
+        <button class="link" type="button" id="buyMonthly">nebo 79 Kč měsíčně</button>
+      </div>
     </div>
     <div class="price" id="manageRow" hidden>
-      <span>Předplatné je aktivní. Děkujeme. 🍵</span>
-      <button class="btn" type="button" id="manageBtn">Spravovat předplatné</button>
+      <span>Členství je aktivní.</span>
+      <button class="btn" type="button" id="manageBtn">Spravovat členství</button>
     </div>
   </section>
 </div></main>
 
-<footer><div class="wrap">Výroky jsou volně přeložené. Tichá zahrada · <span id="payMode"></span></div></footer>
+<footer><div class="wrap"><span id="credit"></span><span id="payMode"></span></div></footer>
 
 <dialog id="auth">
   <form id="authForm" method="dialog" novalidate>
@@ -109,6 +126,26 @@
     <p class="muted small"><button class="link" type="button" id="authSwitch">Nemám účet, chci se registrovat</button></p>
   </form>
 </dialog>
+
+<dialog id="share" aria-labelledby="shareH">
+  <h2 id="shareH">Kartička ke sdílení</h2>
+  <div class="card-wrap"><canvas id="card" width="1080" height="1920" role="img" aria-label="Náhled kartičky s výrokem"></canvas></div>
+  <div class="row">
+    <button class="btn on" type="button" id="shareSend">Sdílet obrázek</button>
+    <a class="btn" id="shareSave" download="ticha-zahrada.png">Uložit obrázek</a>
+    <button class="btn" type="button" id="shareCopy">Zkopírovat text</button>
+    <button class="btn" type="button" id="shareClose">Zavřít</button>
+  </div>
+</dialog>
+
+<div class="minute" id="minute" hidden>
+  <canvas id="minuteSand"></canvas>
+  <div class="minute-bar">
+    <span class="eyebrow">Jedna minuta</span>
+    <button class="link" type="button" id="bellBtn" aria-pressed="false">Zvon na konci: vypnutý</button>
+    <button class="link" type="button" id="minuteEnd">Ukončit</button>
+  </div>
+</div>
 
 <div class="toast" id="toast" role="status"></div>
 <script src="/main.js" type="module"></script>

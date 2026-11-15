@@ -58,7 +58,8 @@ test('registrace, přihlášení, oblíbené', async () => {
   assert.equal((await api('/api/register', { method: 'POST', body: { email: 'a@b.cz', password: 'tichavoda1' } })).status, 409);
 
   const d = await api(`/api/day?today=${today}`);
-  assert.equal(d.body.streak, 1);
+  assert.deepEqual(d.body.week, [today]);
+  assert.equal(d.body.streak, undefined, 'žádná počítadla sérií');
   const f = await api('/api/favorites', { method: 'POST', body: { quoteId: d.body.quote.id } });
   assert.equal(f.body.favorite, true);
   assert.equal((await api('/api/favorites')).body.favorites.length, 1);
@@ -106,6 +107,19 @@ test('Stripe webhook: podpis je povinný, zapíná a vypíná prémium', async (
 
   await send({ type: 'customer.subscription.deleted', data: { object: { customer: 'cus_1', status: 'canceled' } } });
   assert.equal((await api('/api/me')).body.user.premium, false);
+});
+
+test('každý výrok má pramen a kontext, sbírky odkazují na existující výroky', async () => {
+  for (const q of QUOTES) assert.ok(q.source && q.why, `výrok ${q.id}`);
+  const api = client();
+  const free = await api('/api/collections');
+  assert.equal(free.body.open, false);
+  assert.ok(free.body.collections.length >= 3);
+  for (const c of free.body.collections) assert.equal(c.quotes, undefined, 'obsah sbírek je v předplatném');
+  await api('/api/register', { method: 'POST', body: { email: 'c@b.cz', password: 'tichavoda1' } });
+  await api('/api/checkout', { method: 'POST', body: { plan: 'yearly' } });
+  const paid = await api('/api/collections');
+  for (const c of paid.body.collections) assert.equal(c.quotes.length, c.count);
 });
 
 test('zápisy bez JSON jsou odmítnuté', async () => {

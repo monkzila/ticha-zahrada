@@ -2,20 +2,27 @@
 
 Jedno zenové moudro a jeden malý úkol na každý den. Toto je **MVP**: nejmenší verze, se kterou už jde ověřit, jestli o to lidi stojí.
 
+## Pro koho
+
+Pro náročného a vytíženého čtenáře. Chce vědět, odkud výrok je, a nemá čas na meditační aplikaci.
+Proto tu nejsou odznaky, počítadla sérií ani gratulace.
+
 ## Co umí
 
 **Zdarma**
-- moudro dne + úkol „Na dnešek“
-- posledních 7 dní
-- účet (e-mail + heslo), vlastní sbírka oblíbených
-- počítadlo dní v kuse
+- výrok dne s originálem ve znacích, pramenem a kontextem „Proč to říkal“
+- úkol „Na dnešek“
+- **Jedna minuta**: stránka ztichne, v písku přibývají rýhy, na konci volitelný zvon
+- kámen v zahradě za každý den v týdnu, kdy člověk přišel (v neděli se písek uhrabe)
+- kartička ke sdílení (obrázek 1080 × 1920 pro stories)
+- posledních 7 dní, účet, vlastní sbírka oblíbených
 
-**Předplatné**
-- výběr témat (Klid, Práce, Vztahy, Těžké dny)
-- barva zahrady (Šedý písek, Mech, Soumrak)
+**Členství**
+- tematické sbírky (Čajový obřad, Haiku čtyř ročních období, Kóany starých mistrů)
+- výběr témat a barva zahrady
 - deník ke každému dni
 - archiv 30 dní
-- placení přes Stripe, 14 dní zdarma, zrušení přes Stripe portál
+- 690 Kč ročně (hlavní nabídka) nebo 79 Kč měsíčně, 14 dní zdarma, platba přes Stripe
 
 ## Spuštění u sebe (5 minut)
 
@@ -33,6 +40,7 @@ Testy: `npm test`
 ## Jak přidat nová moudra
 
 Otevři `lib/quotes.js` a přidej řádek na konec seznamu. Každé moudro má `id` (nové číslo), `text`, `who` (autor), `practice` (úkol) a `topics` (témata).
+Původ (`orig` znaky, `source` pramen, `why` kontext) se píše pod stejným `id` do `lib/details.js`. Tam jsou i sbírky.
 
 > Cíl: aspoň 365 mouder, ať se rok neopakují. Teď jich je 68.
 
@@ -48,7 +56,7 @@ Otevři `lib/quotes.js` a přidej řádek na konec seznamu. Každé moudro má `
 ## Jak zapnout platby (Stripe)
 
 1. Založ účet na stripe.com (nejdřív v testovacím režimu).
-2. **Produkt**: Produkty → Přidat → „Tichá zahrada – předplatné“, cena 79 Kč měsíčně, opakovaná. Zkopíruj `price_...` do `STRIPE_PRICE_ID`.
+2. **Produkt**: Produkty → Přidat → „Tichá zahrada – členství“ se dvěma opakovanými cenami: 690 Kč ročně (`price_...` do `STRIPE_PRICE_YEARLY`) a 79 Kč měsíčně (do `STRIPE_PRICE_MONTHLY`).
 3. **Klíč**: Vývojáři → API klíče → tajný klíč do `STRIPE_SECRET_KEY`.
 4. **Webhook**: Vývojáři → Webhooky → přidat endpoint `https://tvoje-domena.cz/api/stripe/webhook` s událostmi
    `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
@@ -56,11 +64,13 @@ Otevři `lib/quotes.js` a přidej řádek na konec seznamu. Každé moudro má `
 5. **Zákaznický portál**: Nastavení → Billing → Customer portal → zapnout (aby si lidi mohli předplatné zrušit sami).
 6. Vyzkoušej testovací kartou `4242 4242 4242 4242`. Pak přepni na ostré klíče.
 
-Cenu na stránce změníš v `public/index.html` (hledej „79 Kč“).
+Ceny na stránce změníš v `public/index.html` (hledej „690 Kč“ a „79 Kč“).
 
 ## Než to pustíš lidem
 
 - [ ] obchodní podmínky a zásady ochrany osobních údajů (GDPR), odkaz do patičky
+- [ ] **kontrola znaků** člověkem, který umí japonsky a čínsky: `docs/kontrola-znaku.md`
+- [ ] kontrola kontextů „Proč to říkal“ a jméno překladatele (`TRANSLATION_CREDIT` v `lib/details.js`)
 - [ ] vlastní překlady nebo ověřená práva k citátům
 - [ ] víc mouder
 - [ ] zálohy databáze (stačí kopírovat soubor `.db`)
