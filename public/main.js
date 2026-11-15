@@ -100,6 +100,14 @@ function renderDay() {
   const y = fromIso(e.day).getFullYear();
   const leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
   $('dayNo').textContent = `Den ${dayOfYear(e.day)} z ${leap ? 366 : 365} · ${fmt(e.day, { day: 'numeric', month: 'long' })}`;
+  const key = e.day + ':' + e.quote.id;
+  if (renderDay.last !== key) {
+    renderDay.last = key;
+    const s = document.querySelector('.saying');
+    s.classList.remove('flow');
+    void s.offsetWidth; // restart animace
+    s.classList.add('flow');
+  }
   $('quote').textContent = e.quote.text;
   $('who').textContent = '— ' + e.quote.who;
   $('practice').textContent = e.quote.practice;
@@ -283,7 +291,16 @@ function draw() {
   const cs = getComputedStyle(document.documentElement), col = (n) => cs.getPropertyValue(n).trim();
   c.fillStyle = col('--sand'); c.fillRect(0, 0, w, h);
   c.strokeStyle = col('--sand-line'); c.lineWidth = 1.4; c.lineCap = 'round';
-  const S = stones.map((s) => ({ x: s.x * w, y: s.y * h, r: s.r, halo: s.r + 44 }));
+  // Nový kámen: kruhy se od něj rozvlní jako na vodě (p = 0 → 1)
+  const now = performance.now();
+  let moving = false;
+  const S = stones.map((s) => {
+    const p = reduced || !s.born ? 1 : Math.min(1, (now - s.born) / 1400);
+    if (p < 1) moving = true;
+    const e = 1 - Math.pow(1 - p, 3);
+    return { x: s.x * w, y: s.y * h, r: s.r * (0.6 + 0.4 * Math.min(1, p * 3)), halo: s.r + 8 + 36 * e };
+  });
+  if (moving) requestAnimationFrame(draw);
   const gap = 9;
   for (let y = gap / 2; y < h; y += gap) {
     c.beginPath();
@@ -311,7 +328,7 @@ function draw() {
 }
 gd.addEventListener('click', (e) => {
   const b = gd.getBoundingClientRect();
-  stones.push({ x: (e.clientX - b.left) / b.width, y: (e.clientY - b.top) / b.height, r: 10 + Math.random() * 16 });
+  stones.push({ x: (e.clientX - b.left) / b.width, y: (e.clientY - b.top) / b.height, r: 10 + Math.random() * 16, born: performance.now() });
   if (stones.length > 6) stones.shift();
   draw();
 });
