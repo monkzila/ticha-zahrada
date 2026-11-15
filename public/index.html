@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tichá zahrada</title>
+<meta name="description" content="Jedno zenové moudro a jeden malý úkol na každý den.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23e4e5df'/%3E%3Cellipse cx='16' cy='17' rx='8' ry='6' fill='%236f716b'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Figtree:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header><div class="wrap">
+  <div class="mark">Tichá zahrada <span>· zen na každý den</span></div>
+  <div class="acct">
+    <span class="today" id="todayLbl"></span>
+    <span class="streak" id="streak" hidden></span>
+    <button class="link" id="loginBtn" type="button">Přihlásit</button>
+    <button class="link" id="logoutBtn" type="button" hidden>Odhlásit</button>
+  </div>
+</div></header>
+
+<div class="garden" id="garden" role="img" aria-label="Zahrada z hrabaného písku. Klepnutím přidáš kámen.">
+  <canvas id="sand"></canvas>
+  <div class="hint">klepni do písku a polož kámen</div>
+</div>
+
+<main><div class="wrap">
+  <section class="saying" aria-live="polite">
+    <div class="eyebrow" id="dayNo">&nbsp;</div>
+    <blockquote id="quote">Hrabu písek…</blockquote>
+    <div class="who" id="who"></div>
+    <div class="practice"><b>Na dnešek</b><span id="practice"></span></div>
+    <div class="actions">
+      <button class="btn" id="saveBtn" type="button">Uložit si</button>
+      <button class="btn" id="copyBtn" type="button">Zkopírovat</button>
+      <button class="btn" id="todayBtn" type="button" hidden>Zpět na dnešek</button>
+    </div>
+  </section>
+
+  <section class="journal" id="journalBox" hidden>
+    <label for="journal"><h2>Můj deník</h2></label>
+    <textarea id="journal" rows="4" maxlength="4000" placeholder="Co ti dnešní moudro dalo?"></textarea>
+    <div class="row"><button class="btn on" id="journalSave" type="button">Uložit zápis</button><span class="muted" id="journalState"></span></div>
+  </section>
+
+  <section class="stack">
+    <h2 id="daysH">Posledních sedm dní</h2>
+    <ul class="days" id="days"></ul>
+    <p class="muted" id="daysMore">Starší dny až 30 dní zpátky jsou v předplatném.</p>
+  </section>
+
+  <section class="stack" id="favBox" hidden>
+    <h2>Moje sbírka</h2>
+    <ul class="favs" id="favs"></ul>
+    <p class="muted" id="favEmpty">Zatím prázdná. U moudra, které tě oslovilo, klikni na „Uložit si“.</p>
+  </section>
+
+  <section class="plus" id="plus" aria-labelledby="plusH">
+    <div class="plus-head">
+      <h2 id="plusH">Moje zahrada</h2>
+      <span class="badge" id="plusBadge">Předplatné</span>
+    </div>
+    <p id="plusIntro">S předplatným si vybereš témata mouder, barvu zahrady, píšeš si deník a vidíš 30 dní zpátky.</p>
+
+    <div class="opt">
+      <span class="lbl">Barva zahrady</span>
+      <div class="chips" id="gardenChips">
+        <button class="btn" type="button" data-g="">Šedý písek</button>
+        <button class="btn" type="button" data-g="moss">Mech</button>
+        <button class="btn" type="button" data-g="dusk">Soumrak</button>
+      </div>
+    </div>
+    <div class="opt">
+      <span class="lbl">O čem chci slyšet</span>
+      <div class="chips" id="topicChips"></div>
+      <span class="muted small">Když nevybereš nic, dostaneš ze všech témat.</span>
+    </div>
+
+    <div class="price" id="buyRow">
+      <strong>79 Kč</strong><span>měsíčně · prvních 14 dní zdarma</span>
+      <button class="btn on" type="button" id="buyBtn">Vyzkoušet zdarma</button>
+    </div>
+    <div class="price" id="manageRow" hidden>
+      <span>Předplatné je aktivní. Děkujeme. 🍵</span>
+      <button class="btn" type="button" id="manageBtn">Spravovat předplatné</button>
+    </div>
+  </section>
+</div></main>
+
+<footer><div class="wrap">Výroky jsou volně přeložené. Tichá zahrada · <span id="payMode"></span></div></footer>
+
+<dialog id="auth">
+  <form id="authForm" method="dialog" novalidate>
+    <h2 id="authH">Přihlášení</h2>
+    <label for="email">E-mail</label>
+    <input id="email" name="email" type="email" autocomplete="email" required>
+    <label for="password">Heslo</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" minlength="8" required>
+    <p class="err" id="authErr" role="alert"></p>
+    <div class="row">
+      <button class="btn on" type="submit" id="authSubmit">Přihlásit</button>
+      <button class="btn" type="button" id="authCancel">Zavřít</button>
+    </div>
+    <p class="muted small"><button class="link" type="button" id="authSwitch">Nemám účet, chci se registrovat</button></p>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+<script src="/main.js" type="module"></script>
+</body>
+</html>
