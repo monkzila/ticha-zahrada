@@ -1,4 +1,4 @@
-# Tichá zahrada 🪨
+# kushidō
 
 Jedno zenové moudro a jeden malý úkol na každý den. Toto je **MVP**: nejmenší verze, se kterou už jde ověřit, jestli o to lidi stojí.
 
@@ -59,19 +59,19 @@ Web se dá přidat na plochu a pak se otevírá jako aplikace: s vlastní ikonou
 
 1. Web musí běžet na internetu na adrese s `https://` (viz výše).
 2. Otevři ho v **Safari**.
-3. Klepni na **Sdílet** (čtvereček se šipkou) → **Přidat na plochu** → **Přidat**.
+3. Klepni na **Sdílet** (čtvereček se šipkou) > **Přidat na plochu** > **Přidat**.
 
 Ikony jsou v `public/icons/`, název a barvy v `public/manifest.webmanifest`.
 
 ## Jak zapnout platby (Stripe)
 
 1. Založ účet na stripe.com (nejdřív v testovacím režimu).
-2. **Produkt**: Produkty → Přidat → „Tichá zahrada – členství“ se dvěma opakovanými cenami: 690 Kč ročně (`price_...` do `STRIPE_PRICE_YEARLY`) a 79 Kč měsíčně (do `STRIPE_PRICE_MONTHLY`).
-3. **Klíč**: Vývojáři → API klíče → tajný klíč do `STRIPE_SECRET_KEY`.
-4. **Webhook**: Vývojáři → Webhooky → přidat endpoint `https://tvoje-domena.cz/api/stripe/webhook` s událostmi
+2. **Produkt**: Produkty > Přidat > „kushidō, členství“ se dvěma opakovanými cenami: 690 Kč ročně (`price_...` do `STRIPE_PRICE_YEARLY`) a 79 Kč měsíčně (do `STRIPE_PRICE_MONTHLY`).
+3. **Klíč**: Vývojáři > API klíče > tajný klíč do `STRIPE_SECRET_KEY`.
+4. **Webhook**: Vývojáři > Webhooky > přidat endpoint `https://tvoje-domena.cz/api/stripe/webhook` s událostmi
    `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
    Podpisový klíč `whsec_...` do `STRIPE_WEBHOOK_SECRET`.
-5. **Zákaznický portál**: Nastavení → Billing → Customer portal → zapnout (aby si lidi mohli předplatné zrušit sami).
+5. **Zákaznický portál**: Nastavení > Billing > Customer portal > zapnout (aby si lidi mohli předplatné zrušit sami).
 6. Vyzkoušej testovací kartou `4242 4242 4242 4242`. Pak přepni na ostré klíče.
 
 Ceny na stránce změníš v `public/index.html` (hledej „690 Kč“ a „79 Kč“).

@@ -12,7 +12,7 @@ const port = Number(process.env.PORT || 3000);
 
 const server = app.listen(port, () => {
   const pay = process.env.STRIPE_SECRET_KEY ? 'Stripe' : process.env.NODE_ENV === 'production' ? 'vypnuto' : 'demo (bez placení)';
-  console.log(`Tichá zahrada běží na http://localhost:${port}  ·  platby: ${pay}`);
+  console.log(`kushidō běží na http://localhost:${port}  (platby: ${pay})`);
 });
 
 server.on('error', (err) => {

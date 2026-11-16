@@ -44,7 +44,7 @@ async function loadMe() {
   state.topics = r.topics;
   state.mu = r.mu;
   state.payments = r.payments;
-  $('credit').textContent = r.credit + ' · originál a pramen najdeš u každého výroku';
+  $('credit').textContent = r.credit + '. Originál a pramen najdeš u každého výroku.';
 }
 
 async function loadDay() {
@@ -141,7 +141,7 @@ async function loadCollections() {
   ul.innerHTML = '';
   r.collections.forEach((c) => {
     const li = document.createElement('li');
-    const extra = c.hasNotes ? ' · průvodce' : '';
+    const extra = c.hasNotes ? ' a průvodce' : '';
     const head = [span('t', c.title), span('n', r.open ? `${c.count} ${plural(c.count)}${extra}` : 'pro členy'), span('ds', c.desc)];
     if (r.open) {
       const d = document.createElement('details');
@@ -150,7 +150,7 @@ async function loadCollections() {
       const ol = document.createElement('ol');
       c.quotes.forEach((q) => {
         const item = document.createElement('li');
-        item.append(span('q', q.text), span('w', `${q.who} · ${q.source}`));
+        item.append(span('q', q.text), span('w', `${q.who}, ${q.source}`));
         ol.append(item);
       });
       d.append(s, ol);
@@ -176,7 +176,7 @@ async function loadFavs() {
   ul.innerHTML = '';
   r.favorites.forEach((q) => {
     const li = document.createElement('li');
-    li.append(span('q', q.text), span('w', '— ' + q.who));
+    li.append(span('q', q.text), span('w', q.who));
     ul.append(li);
   });
   $('favEmpty').hidden = r.favorites.length > 0;
@@ -200,7 +200,7 @@ function renderDay() {
   $('todayLbl').textContent = fmt(state.today, { weekday: 'long', day: 'numeric', month: 'long' });
   const y = fromIso(e.day).getFullYear();
   const leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
-  $('dayNo').textContent = mu ? mu.eyebrow : `Den ${dayOfYear(e.day)} z ${leap ? 366 : 365} · ${fmt(e.day, { day: 'numeric', month: 'long' })}`;
+  $('dayNo').textContent = mu ? mu.eyebrow : `${fmt(e.day, { day: 'numeric', month: 'long' })}, den ${dayOfYear(e.day)} z ${leap ? 366 : 365}`;
   $('quote').textContent = q.text;
   $('quote').classList.toggle('mu', !!mu);
 
@@ -210,7 +210,7 @@ function renderDay() {
   o.hidden = !!mu || !q.orig;
   if (!o.hidden) q.orig.split(/\s+/).forEach((part) => o.append(span('', part)));
 
-  $('who').textContent = '— ' + q.who;
+  $('who').textContent = q.who;
   $('src').textContent = q.source || '';
   $('why').hidden = !q.why;
   $('whyText').textContent = q.why || '';
@@ -630,7 +630,7 @@ async function paintCard() {
   lines.forEach((l) => { c.fillText(l, left, y); y += lh; });
   y += 44;
   c.fillStyle = CARD.muted; c.font = '400 36px Nunito, sans-serif';
-  c.fillText('— ' + q.who, left, y);
+  c.fillText(q.who, left, y);
   if (q.source) {
     c.font = '400 28px Nunito, sans-serif';
     wrapLines(c, q.source, textW).forEach((l, i) => c.fillText(l, left, y + 58 + i * 40));
@@ -648,7 +648,7 @@ async function paintCard() {
   }
 
   c.fillStyle = CARD.ink; c.font = '300 40px Nunito, sans-serif'; c.textBaseline = 'alphabetic';
-  c.fillText('Tichá zahrada', left, H - 120);
+  c.fillText('kushidō', left, H - 120);
   return cvs;
 }
 
@@ -661,13 +661,13 @@ $('shareBtn').onclick = async () => {
   URL.revokeObjectURL(cardUrl);
   cardUrl = URL.createObjectURL(blob);
   $('shareSave').href = cardUrl;
-  const file = new File([blob], 'ticha-zahrada.png', { type: 'image/png' });
+  const file = new File([blob], 'kushido.png', { type: 'image/png' });
   $('shareSend').hidden = !navigator.canShare?.({ files: [file] });
   $('shareSend').onclick = () => navigator.share({ files: [file] }).catch(() => {});
 };
 $('shareCopy').onclick = () => {
   const q = current();
-  const t = `„${q.text}“ — ${q.who}`;
+  const t = `„${q.text}“\n${q.who}`;
   navigator.clipboard.writeText(t).then(() => toast('Zkopírováno'), () => toast('Kopírování se nepovedlo'));
 };
 $('shareClose').onclick = () => $('share').close();
