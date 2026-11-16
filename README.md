@@ -19,7 +19,7 @@ Proto tu nejsou odznaky, počítadla sérií ani gratulace.
 
 **Členství**
 - tematické sbírky (Čajový obřad s průvodcem po japonských čajích, Haiku čtyř ročních období, Kóany starých mistrů)
-- výběr témat, barva zahrady a barva členské sekce (Kámen, Matcha, Kincugi, Ticho)
+- výběr témat, barva zahrady a barva celé aplikace (Kámen, Matcha, Kincugi, Ticho)
 - deník ke každému dni
 - archiv 30 dní
 - 690 Kč ročně (hlavní nabídka) nebo 79 Kč měsíčně, 14 dní zdarma, platba přes Stripe
